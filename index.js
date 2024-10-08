@@ -16,6 +16,6 @@ app.get("/",(req,res)=>{
 
 
 
-app.listen(3002,(er)=>{
+app.listen(process.env.PORT,(er)=>{
     console.log("sucess");
 });
