@@ -1,24 +1,38 @@
 const express=require('express');
 const { dataadmin,datastudent,datateacher,datateacherclass } = require('./database');
+const cloudinary=require('cloudinary').v2;
 let multer=require('multer');
 let admin=express.Router();
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-      cb(null, 'uploads/')
-    },
-    filename: function (req, file, cb) {
+// const storage = multer.diskStorage({
+//     destination: function (req, file, cb) {
+//       cb(null, 'uploads/')
+//     },
+//     filename: function (req, file, cb) {
       
-      cb(null, Date.now()+"_"+file.originalname);
-    }
-  })
+//       cb(null, Date.now()+"_"+file.originalname);
+//     }
+//   })
+cloudinary.config({ 
+    cloud_name: 'dfhug7rwx', 
+    api_key: '262784511165531', 
+    api_secret: 'T_JoL4AMHQeaMQYy2_GFW8S0uco' 
+  });
+  const upload = multer({ dest: 'uploads/' });
   
-  const upload = multer({ storage: storage });
+  
   admin.post("/uploadstudentpic",upload.single('image'),async (req,res)=>{
-    let image=req.file;
+    let file=req.file;
     let id=req.body.picid;
+    let url;
+    await cloudinary.uploader.upload(file.path,
+        function(error, result) {
+         
+          
+        url=result.secure_url;
+      });
     let v=await datastudent.findOne({id});
     if(v){
-        await datastudent.updateOne({id},{image:image.filename});
+        await datastudent.updateOne({id},{image:url});
         res.json({
             ok:true
         })
@@ -178,11 +192,18 @@ admin.post("/addteacheradmin",async (req,res)=>{
     }
 })
 admin.post("/teacherpic",upload.single('image1'),async (req,res)=>{
-    let image=req.file;
+    let file=req.file;
     let id=req.body.picid;
     let f=await datateacher.findOne({id});
+    let url;
+    await cloudinary.uploader.upload(file.path,
+        function(error, result) {
+         
+          
+        url=result.secure_url;
+      });
     if(f){
-    let v=await datateacher.updateOne({id},{image:image.filename});
+    let v=await datateacher.updateOne({id},{image:url});
     if(v){
         res.json({
             ok:true
