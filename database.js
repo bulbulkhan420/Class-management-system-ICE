@@ -1,6 +1,6 @@
 let mongoose=require('mongoose');
 const { type } = require('os');
-require('dotenv').config();
+let env=require('dotenv').config();
 mongoose.connect(process.env.URL);
 let student=new mongoose.Schema({
     id:String,
